@@ -46,7 +46,7 @@ app.get("/products", (req: Request, res: Response) => {
 app.get("/products/search", (req: Request, res: Response) => {
     try {
         // const q = req.query.q as string
-        const { q } = req.query as { q: string }
+        const {q} = req.query as {q: string}
 
         if (q !== undefined) {
             if (q.length < 1) {
@@ -403,17 +403,3 @@ app.put("/products/:id", (req: Request, res: Response) => {
         res.status(500).send(error.message)
     }
 })
-
-
-// console.log(users)
-// console.log(products)
-// console.log(purchases)
-// createUser("u003", "ana@gmail.com", "ana1234")
-// getAllUsers()
-// createProduct("p003", "Nike Vapormax Flyknit", 1000, PRODUCT_CATEGORY.SNEAKERS)
-// getAllProducts()
-// getProductById("p002")
-// queryProductsByName("tele", products)
-// createPurchase("u001", "p001", 1, 1000)
-// createPurchase("u001", "p002", 3, 300)
-// getAllPurchasesFromUserId("u001")
