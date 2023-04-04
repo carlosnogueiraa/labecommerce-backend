@@ -30,6 +30,10 @@ Endpoint que busca um produto pelo ID.
 
 
 
+getPurchaseByUserId
+
+Endpoint que busca uma compra pelo ID do usuário.
+
 ```
 
 ---
