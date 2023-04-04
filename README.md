@@ -3,8 +3,6 @@
 </h1>
 <p>Repositório que contém a documentação da API do projeto Labecommerce da Labenu. Que permite interagir com um sistema de e-commerce. A API tem funcionalidades como buscar usuários e produtos, criar usuários, produtos e compras, além de editar e deletar usuários e produtos.</p>
 
-<br>
-
 ## Endpoints Disponíveis
 
 - `[GET] getAllUsers`: Endpoint que busca por todos os usuários cadastrados.
