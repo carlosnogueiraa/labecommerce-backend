@@ -34,6 +34,15 @@ getPurchaseByUserId
 
 Endpoint que busca uma compra pelo ID do usuário.
 
+
+
+deleteUserById
+
+Endpoint que deleta um usuário pelo ID.
+
+
+
+
 ```
 
 ---
