@@ -18,6 +18,10 @@ INSERT INTO users (id, email, password)
 VALUES ("u004", "brenno@gmail.com", "1234brenno");
 
 
+-- Retorna os usuários cadastrados
+SELECT * FROM users;
+
+
 -- Retorna o resultado ordenado pela coluna email em ordem crescente
 SELECT * FROM users ORDER BY email ASC;
 
@@ -58,6 +62,10 @@ INSERT INTO products (id, name, price, category)
 VALUES ("p006", "Apple Airpods Pro", 183, "Electronics");
 
 
+-- Retorna os produtos cadastrados
+SELECT * FROM products;
+
+
 -- Retorna o resultado ordenado pela coluna price em ordem crescente
 SELECT * FROM products ORDER BY price ASC LIMIT 20 OFFSET 0;
 
@@ -86,3 +94,43 @@ UPDATE products SET price = "200" WHERE id = "p006";
 
 -- Deleta a tabela products
 DROP TABLE products;
+
+
+CREATE TABLE purchases (
+    id TEXT PRIMARY KEY UNIQUE NOT NULL,
+    total_price REAL NOT NULL,
+    paid INTEGER NOT NULL,
+    delivered_at TEXT,
+    buyer_id TEXT NOT NULL,
+    FOREIGN KEY (buyer_id) REFERENCES users(id)
+);
+
+
+INSERT INTO purchases
+VALUES 
+    ("c001", 2000, 0, NULL, "u001"),
+    ("c002", 650, 1, NULL, "u001"),
+    ("c003", 450, 0, NULL, "u002"),
+    ("c004", 800, 1, NULL, "u002");
+
+
+-- Retorna as compras cadastrados
+SELECT * FROM purchases;
+
+
+-- Exercício 3
+SELECT * FROM purchases WHERE buyer_id = "u001";
+
+
+SELECT p.id, p.total_price, p.paid, p.delivered_at
+FROM purchases p
+JOIN users u ON p.buyer_id = u.id
+WHERE p.buyer_id = 'u001';
+
+
+-- Simula que o pedido foi entregue no exato momento da edição
+UPDATE purchases SET delivered_at = DATETIME("now") WHERE id = "c004";
+
+
+-- Deleta a tabela purchases
+DROP TABLE purchases;
