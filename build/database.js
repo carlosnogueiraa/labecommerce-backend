@@ -1,21 +1,24 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getAllPurchasesFromUserId = exports.createPurchase = exports.purchases = exports.queryProductsByName = exports.getProductById = exports.getAllProducts = exports.createProduct = exports.products = exports.getAllUsers = exports.createUser = exports.users = void 0;
-const types_1 = require("./types");
 exports.users = [
     {
         id: "u001",
+        name: "Zé",
         email: "ze@gmail.com",
-        password: "1234jose"
+        password: "1234jose",
+        created_at: new Date()
     },
     {
         id: "u002",
+        name: "Rato",
         email: "rato@gmail.com",
-        password: "rato1234"
+        password: "rato1234",
+        created_at: new Date()
     }
 ];
-const createUser = (id, email, password) => {
-    const newUser = { id, email, password };
+const createUser = (id, name, email, password, created_at) => {
+    const newUser = { id, name, email, password, created_at };
     exports.users.push(newUser);
     console.log("Cadastro realizado com sucesso");
 };
@@ -27,19 +30,21 @@ exports.getAllUsers = getAllUsers;
 exports.products = [
     {
         id: "p001",
-        name: "Telefone",
-        price: 1000,
-        category: types_1.PRODUCT_CATEGORY.ELECTRONICS
+        name: "Jordan 4 Retro SB Pine Green",
+        price: 335,
+        description: "Sneakers",
+        image_url: "https://www.exemplo.com/jordan-4-retro-sb-pine-green"
     },
     {
         id: "p002",
-        name: "Camiseta",
-        price: 100,
-        category: types_1.PRODUCT_CATEGORY.CLOTHES
+        name: "Nike Dunk Low Grey Fog",
+        price: 137,
+        description: "Sneakers",
+        image_url: "https://www.exemplo.com/nike-dunk-low-grey-fog"
     }
 ];
-const createProduct = (id, name, price, category) => {
-    const newProduct = { id, name, price, category };
+const createProduct = (id, name, price, description, image_url) => {
+    const newProduct = { id, name, price, description, image_url };
     exports.products.push(newProduct);
     console.log("Produto criado com sucesso");
 };
@@ -49,14 +54,16 @@ const getAllProducts = () => {
 };
 exports.getAllProducts = getAllProducts;
 const getProductById = (idToSearch) => {
-    if (idToSearch === undefined) {
-        return exports.products;
+    if (!idToSearch) {
+        throw new Error("O ID do produto deve ser informado");
     }
-    return exports.products.filter((product) => {
-        if (product.id === idToSearch) {
-            return product;
-        }
+    const result = exports.products.filter((product) => {
+        return product.id === idToSearch;
     });
+    if (result.length === 0) {
+        return null;
+    }
+    return result[0];
 };
 exports.getProductById = getProductById;
 const queryProductsByName = (q, products) => {
@@ -67,27 +74,29 @@ const queryProductsByName = (q, products) => {
 exports.queryProductsByName = queryProductsByName;
 exports.purchases = [
     {
-        userId: "u001",
-        productId: "p002",
-        quantity: 1,
-        totalPrice: 100
+        id: "c001",
+        buyer: "u001",
+        total_price: 2000,
+        created_at: new Date(),
+        paid: 0
     },
     {
-        userId: "u002",
-        productId: "p001",
-        quantity: 2,
-        totalPrice: 2000
+        id: "c002",
+        buyer: "u002",
+        total_price: 450,
+        created_at: new Date(),
+        paid: 0
     }
 ];
-const createPurchase = (userId, productId, quantity, totalPrice) => {
-    const newPurchase = { userId, productId, quantity, totalPrice };
+const createPurchase = (id, buyer, total_price, created_at, paid) => {
+    const newPurchase = { id, buyer, total_price, created_at, paid };
     exports.purchases.push(newPurchase);
     console.log("Compra realizada com sucesso");
 };
 exports.createPurchase = createPurchase;
 const getAllPurchasesFromUserId = (userIdToSearch) => {
     return exports.purchases.filter((purchase) => {
-        if (purchase.userId === userIdToSearch) {
+        if (purchase.buyer === userIdToSearch) {
             return purchase;
         }
     });

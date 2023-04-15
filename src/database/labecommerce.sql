@@ -23,7 +23,7 @@ SELECT * FROM users;
 SELECT * FROM users ORDER BY email ASC;
 
 -- Deleta um usuário pelo id
-DELETE FROM users WHERE id = 'u004';
+DELETE FROM users WHERE id = 'u002';
 
 -- Edita um usuário pelo id
 UPDATE users
@@ -83,7 +83,7 @@ CREATE TABLE purchases (
     total_price REAL NOT NULL,
     created_at TEXT NOT NULL DEFAULT(DATETIME('now')),
     paid INTEGER NOT NULL DEFAULT 0,
-    FOREIGN KEY (buyer) REFERENCES users(id)
+    FOREIGN KEY (buyer) REFERENCES users(id) ON DELETE CASCADE
 );
 
 INSERT INTO purchases (id, buyer, total_price, paid)
@@ -114,8 +114,8 @@ CREATE TABLE purchases_products(
     purchase_id TEXT NOT NULL,
     product_id TEXT NOT NULL,
     quantity INTEGER NOT NULL DEFAULT 1,
-    FOREIGN KEY (purchase_id) REFERENCES purchases(id),
-    FOREIGN KEY (product_id) REFERENCES products(id)
+    FOREIGN KEY (purchase_id) REFERENCES purchases(id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
 
 INSERT INTO purchases_products
@@ -130,4 +130,5 @@ SELECT * FROM purchases_products
 INNER JOIN purchases ON purchase_id = purchases.id
 INNER JOIN products ON product_id = products.id;
 
+-- Deleta a tabela purchases_products
 DROP TABLE purchases_products;
