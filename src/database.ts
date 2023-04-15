@@ -1,21 +1,25 @@
-import { TUser, TProduct, TPurchase, PRODUCT_CATEGORY } from "./types"
+import { TUser, TProduct, TPurchase } from "./types"
 
 export const users: TUser[] = [
     {
         id: "u001",
+        name: "Zé",
         email: "ze@gmail.com",
-        password: "1234jose"
+        password: "1234jose",
+        created_at: new Date()
     },
 
     {
         id: "u002",
+        name: "Rato",
         email: "rato@gmail.com",
-        password: "rato1234"
+        password: "rato1234",
+        created_at: new Date()
     }
 ]
 
-export const createUser = (id: string, email: string, password: string) => {
-    const newUser: TUser = {id, email, password}
+export const createUser = (id: string, name: string, email: string, password: string, created_at: Date) => {
+    const newUser: TUser = {id, name, email, password, created_at}
     users.push(newUser)
     console.log("Cadastro realizado com sucesso")
 }
@@ -27,21 +31,23 @@ export const getAllUsers = () => {
 export const products: TProduct[] = [
     {
         id: "p001",
-        name: "Telefone",
-        price: 1000,
-        category: PRODUCT_CATEGORY.ELECTRONICS
+        name: "Jordan 4 Retro SB Pine Green",
+        price: 335,
+        description: "Sneakers",
+        image_url: "https://www.exemplo.com/jordan-4-retro-sb-pine-green"
     },
 
     {
         id: "p002",
-        name: "Camiseta",
-        price: 100,
-        category: PRODUCT_CATEGORY.CLOTHES
+        name: "Nike Dunk Low Grey Fog",
+        price: 137,
+        description: "Sneakers",
+        image_url: "https://www.exemplo.com/nike-dunk-low-grey-fog"
     }
 ]
 
-export const createProduct = (id: string, name: string, price: number, category: PRODUCT_CATEGORY) => {
-    const newProduct: TProduct = {id, name, price, category}
+export const createProduct = (id: string, name: string, price: number, description: string, image_url: string) => {
+    const newProduct: TProduct = {id, name, price, description, image_url}
     products.push(newProduct)
     console.log("Produto criado com sucesso")
 }
@@ -51,14 +57,19 @@ export const getAllProducts = () => {
 }
 
 export const getProductById = (idToSearch: string) => {
-    if (idToSearch === undefined) {
-        return products
+    if (!idToSearch) {
+        throw new Error("O ID do produto deve ser informado")
     }
-    return products.filter((product: TProduct) => {
-        if (product.id === idToSearch) {
-            return product
-        }
+
+    const result = products.filter((product: TProduct) => {
+        return product.id === idToSearch
     })
+
+    if (result.length === 0) {
+        return null
+    }
+
+    return result[0]
 }
 
 export const queryProductsByName = (q: string, products: TProduct[]) => {
@@ -71,29 +82,31 @@ export const queryProductsByName = (q: string, products: TProduct[]) => {
 
 export const purchases: TPurchase[] = [
     {
-        userId: "u001",
-        productId: "p002",
-        quantity: 1,
-        totalPrice: 100
+        id: "c001",
+        buyer: "u001",
+        total_price: 2000,
+        created_at: new Date(),
+        paid: 0
     },
 
     {
-        userId: "u002",
-        productId: "p001",
-        quantity: 2,
-        totalPrice: 2000
+        id: "c002",
+        buyer: "u002",
+        total_price: 450,
+        created_at: new Date(),
+        paid: 0
     }
 ]
 
-export const createPurchase = (userId: string, productId: string, quantity: number, totalPrice: number) => {
-    const newPurchase: TPurchase = {userId, productId, quantity, totalPrice}
+export const createPurchase = (id: string, buyer: string, total_price: number, created_at: Date, paid: number) => {
+    const newPurchase: TPurchase = {id, buyer, total_price, created_at, paid}
     purchases.push(newPurchase)
     console.log("Compra realizada com sucesso")
 }
 
 export const getAllPurchasesFromUserId = (userIdToSearch: string) => {
     return purchases.filter((purchase: TPurchase) => {
-        if (purchase.userId === userIdToSearch) {
+        if (purchase.buyer === userIdToSearch) {
             return purchase
         }
     })

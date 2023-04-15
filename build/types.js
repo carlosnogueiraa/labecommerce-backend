@@ -1,10 +1,3 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PRODUCT_CATEGORY = void 0;
-var PRODUCT_CATEGORY;
-(function (PRODUCT_CATEGORY) {
-    PRODUCT_CATEGORY["SNEAKERS"] = "T\u00EAnis";
-    PRODUCT_CATEGORY["CLOTHES"] = "Roupas";
-    PRODUCT_CATEGORY["ELECTRONICS"] = "Eletr\u00F4nicos";
-})(PRODUCT_CATEGORY = exports.PRODUCT_CATEGORY || (exports.PRODUCT_CATEGORY = {}));
 //# sourceMappingURL=types.js.map

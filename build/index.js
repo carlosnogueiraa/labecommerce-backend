@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -6,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const database_1 = require("./database");
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
+const knex_1 = require("./database/knex");
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
 app.use((0, cors_1.default)());
@@ -15,29 +25,43 @@ app.listen(3000, () => {
 app.get("/ping", (req, res) => {
     res.send("Pong!");
 });
-app.get("/users", (req, res) => {
+app.get("/users", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        res.status(200).send(database_1.users);
+        const result = yield (0, knex_1.db)("users").orderBy("id", "asc");
+        res.status(200).send(result);
     }
     catch (error) {
         console.log(error);
-        if (res.statusCode === 200) {
+        if (res.statusCode === 201) {
             res.status(500).send(error.message);
         }
+        if (error instanceof Error) {
+            res.send(error.message);
+        }
+        else {
+            res.send("Erro inesperado");
+        }
     }
-});
-app.get("/products", (req, res) => {
+}));
+app.get("/products", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        res.status(200).send(database_1.products);
+        const result = yield (0, knex_1.db)("products").orderBy("id", "asc");
+        res.status(200).send(result);
     }
     catch (error) {
         console.log(error);
-        if (res.statusCode === 200) {
+        if (res.statusCode === 201) {
             res.status(500).send(error.message);
         }
+        if (error instanceof Error) {
+            res.send(error.message);
+        }
+        else {
+            res.send("Erro inesperado");
+        }
     }
-});
-app.get("/products/search", (req, res) => {
+}));
+app.get("/products/search", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { q } = req.query;
         if (q !== undefined) {
@@ -46,35 +70,38 @@ app.get("/products/search", (req, res) => {
                 throw new Error("O nome deve ter pelo menos 1 caractere");
             }
         }
-        const result = database_1.products.filter((product) => {
-            return product.name.toLowerCase().includes(q.toLowerCase());
-        });
-        res.status(200).send(result);
+        const result = yield (0, knex_1.db)("products").where("name", "like", `%${q}%`);
+        if (result.length === 0) {
+            res.status(404).send("Nenhum produto encontrado");
+        }
+        else {
+            res.status(200).send(result);
+        }
     }
     catch (error) {
         console.log(error);
-        res.status(500).send(error.message);
+        if (res.statusCode === 201) {
+            res.status(500).send(error.message);
+        }
+        if (error instanceof Error) {
+            res.send(error.message);
+        }
+        else {
+            res.send("Erro inesperado");
+        }
     }
-});
-app.post("/users", (req, res) => {
+}));
+app.post("/users", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { id, email, password } = req.body;
+        const { id, name, email, password, created_at } = req.body;
         if (id !== undefined) {
             if (typeof id !== "string") {
                 throw new Error("Id deve ser uma string");
-            }
-            const userExists = database_1.users.find((user) => user.id === id);
-            if (userExists) {
-                throw new Error("Id já criado");
             }
         }
         if (email !== undefined) {
             if (typeof email !== "string") {
                 throw new Error("Email deve ser uma string");
-            }
-            const emailExists = database_1.users.find((user) => user.email === email);
-            if (emailExists) {
-                throw new Error("Email já criado");
             }
         }
         if (password !== undefined) {
@@ -82,29 +109,49 @@ app.post("/users", (req, res) => {
                 throw new Error("Password deve ser uma string");
             }
         }
-        const newUser = {
+        const userExists = yield (0, knex_1.db)("users").where({ id });
+        const emailExists = yield (0, knex_1.db)("users").where({ email });
+        if (userExists.length) {
+            throw new Error("Id já cadastrado");
+        }
+        if (emailExists.length) {
+            throw new Error("Email já cadastrado");
+        }
+        yield (0, knex_1.db)("users").insert({
             id,
+            name,
             email,
             password
+        });
+        const newUser = {
+            id,
+            name,
+            email,
+            password,
+            created_at
         };
         database_1.users.push(newUser);
         res.status(201).send("Cadastro realizado com sucesso");
     }
     catch (error) {
         console.log(error);
-        res.status(500).send(error.message);
+        if (res.statusCode === 201) {
+            res.status(500).send(error.message);
+        }
+        if (error instanceof Error) {
+            res.send(error.message);
+        }
+        else {
+            res.send("Erro inesperado");
+        }
     }
-});
-app.post("/products", (req, res) => {
+}));
+app.post("/products", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { id, name, price, category } = req.body;
+        const { id, name, price, description, image_url } = req.body;
         if (id !== undefined) {
             if (typeof id !== "string") {
                 throw new Error("Id deve ser uma string");
-            }
-            const idExists = database_1.products.find((product) => product.id === id);
-            if (idExists) {
-                throw new Error("Id já criado");
             }
         }
         if (name !== undefined) {
@@ -117,158 +164,203 @@ app.post("/products", (req, res) => {
                 throw new Error("Price deve ser um number");
             }
         }
-        if (category !== undefined) {
-            if (typeof category !== "string") {
-                throw new Error("Category deve ser uma string");
-            }
+        const idExists = yield (0, knex_1.db)("products").where({ id });
+        if (idExists.length) {
+            throw new Error("Id já criado");
         }
+        yield (0, knex_1.db)("products").insert({
+            id,
+            name,
+            price,
+            description,
+            image_url,
+        });
         const newProduct = {
             id,
             name,
             price,
-            category
+            description,
+            image_url
         };
         database_1.products.push(newProduct);
         res.status(201).send("Produto cadastrado com sucesso");
     }
     catch (error) {
-        res.status(500).send(error.message);
+        console.log(error);
+        if (res.statusCode === 201) {
+            res.status(500).send(error.message);
+        }
+        if (error instanceof Error) {
+            res.send(error.message);
+        }
+        else {
+            res.send("Erro inesperado");
+        }
     }
-});
-app.post("/purchases", (req, res) => {
+}));
+app.post("/purchases", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { userId, productId, quantity, totalPrice } = req.body;
-        if (userId !== undefined) {
-            if (typeof userId !== "string") {
-                throw new Error("UserId deve ser uma string");
+        const { id, buyer, total_price, created_at, paid } = req.body;
+        const purchaseExists = yield (0, knex_1.db)("purchases").where({ id }).select("*");
+        if (purchaseExists.length > 0) {
+            throw new Error("Já existe uma compra com esse id");
+        }
+        if (id !== undefined) {
+            if (typeof id !== "string") {
+                throw new Error("Id deve ser uma string");
             }
-            if (!userId) {
-                throw new Error("Usuário não existe");
-            }
-            const userIdExists = database_1.users.find((user) => user.id === userId);
-            if (!userIdExists) {
-                throw new Error("Id não encontrado");
+            const userExists = yield (0, knex_1.db)("users").where({ id }).select("*");
+            if (!userExists) {
+                throw new Error("Usuário não encontrado");
             }
         }
-        if (productId !== undefined) {
-            if (typeof productId !== "string") {
-                throw new Error("ProductId deve ser uma string");
-            }
-            if (!productId) {
-                throw new Error("Produto não existe");
-            }
-            const productIdExists = database_1.products.find((product) => product.id === productId);
-            if (!productIdExists) {
-                throw new Error("Produto não encontrado");
-            }
-            if (typeof productId !== "string") {
-                throw new Error("ProductId deve ser uma string");
-            }
-        }
-        if (quantity !== undefined) {
-            if (typeof quantity !== "number") {
-                throw new Error("Quantity deve ser um number");
-            }
-        }
-        if (totalPrice !== undefined) {
-            if (typeof totalPrice !== "number") {
+        if (total_price !== undefined) {
+            if (typeof total_price !== "number") {
                 throw new Error("TotalPrice deve ser um number");
             }
         }
+        yield (0, knex_1.db)("purchases").insert({
+            id,
+            buyer,
+            total_price,
+            paid
+        });
         const newPurchase = {
-            userId,
-            productId,
-            quantity,
-            totalPrice
+            id,
+            buyer,
+            total_price,
+            created_at,
+            paid
         };
         database_1.purchases.push(newPurchase);
         res.status(201).send("Compra realizada com sucesso");
     }
     catch (error) {
-        res.status(500).send(error.message);
+        console.log(error);
+        if (res.statusCode === 201) {
+            res.status(500).send(error.message);
+        }
+        if (error instanceof Error) {
+            res.send(error.message);
+        }
+        else {
+            res.send("Erro inesperado");
+        }
     }
-});
-app.get("/products/:id", (req, res) => {
+}));
+app.get("/products/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { id } = req.params;
-        const productIdExists = database_1.products.find((product) => product.id === id);
-        if (!productIdExists) {
+        const productExists = yield (0, knex_1.db)("products").where({ id }).select("*");
+        if (!productExists || productExists.length === 0) {
             throw new Error("Produto não encontrado");
         }
-        const result = database_1.products.filter((product) => {
-            return product.id === id;
-        });
-        res.status(200).send(result);
+        res.status(200).send(productExists);
     }
     catch (error) {
-        res.status(500).send(error.message);
-    }
-});
-app.get("/users/:id/purchases", (req, res) => {
-    try {
-        const id = req.params.id;
-        const userIdExists = database_1.users.find((user) => user.id === id);
-        if (!userIdExists) {
-            throw new Error("Id não encontrado");
+        console.log(error);
+        if (res.statusCode === 201) {
+            res.status(500).send(error.message);
         }
-        const result = database_1.purchases.filter((purchase) => {
-            return purchase.userId === id;
-        });
-        if (!result) {
+        if (error instanceof Error) {
+            res.send(error.message);
+        }
+        else {
+            res.send("Erro inesperado");
+        }
+    }
+}));
+app.get("/users/:id/purchases", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { id } = req.params;
+        const userExists = yield (0, knex_1.db)("users").where({ id }).select("*");
+        if (!userExists || userExists.length === 0) {
             throw new Error("Usuário não encontrado");
         }
-        res.status(200).send(result);
-    }
-    catch (error) {
-        res.status(500).send(error.message);
-    }
-});
-app.delete("/users/:id", (req, res) => {
-    try {
-        const { id } = req.params;
-        const userIdExists = database_1.users.find((user) => user.id === id);
-        if (!userIdExists) {
-            throw new Error("Id não encontrado");
+        const purchases = yield (0, knex_1.db)("purchases").where("buyer", id);
+        if (purchases.length === 0) {
+            throw new Error("Compra não encontrada");
         }
-        const resultUser = database_1.users.findIndex((user) => {
-            return user.id === id;
-        });
-        resultUser < 0
-            ?
-                res.status(404).send("User não encontrado")
-            :
-                database_1.users.splice(resultUser, 1),
-            res.status(200).send("User apagado com sucesso");
+        res.status(200).send(purchases);
     }
     catch (error) {
-        res.status(500).send(error.message);
+        console.log(error);
+        if (res.statusCode === 201) {
+            res.status(500).send(error.message);
+        }
+        if (error instanceof Error) {
+            res.send(error.message);
+        }
+        else {
+            res.send("Erro inesperado");
+        }
     }
-});
-app.delete("/products/:id", (req, res) => {
+}));
+app.delete("/users/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { id } = req.params;
-        const productIdExists = database_1.products.find((product) => product.id === id);
-        if (!productIdExists) {
+        const userIdExists = yield (0, knex_1.db)("users").where({ id }).select("*");
+        if (!userIdExists || userIdExists.length === 0) {
+            throw new Error("Usuário não encontrado");
+        }
+        const havePurchases = yield (0, knex_1.db)("purchases").where("buyer", id);
+        if (havePurchases.length > 0) {
+            yield (0, knex_1.db)("purchases").where("buyer", id).del();
+        }
+        yield (0, knex_1.db)("users").where({ id }).del();
+        res.status(200).send("Usuário apagado com sucesso");
+    }
+    catch (error) {
+        console.log(error);
+        if (res.statusCode === 201) {
+            res.status(500).send(error.message);
+        }
+        if (error instanceof Error) {
+            res.send(error.message);
+        }
+        else {
+            res.send("Erro inesperado");
+        }
+    }
+}));
+app.delete("/products/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { id } = req.params;
+        const productIdExists = yield (0, knex_1.db)("products").where({ id }).select("*");
+        if (!productIdExists || productIdExists.length === 0) {
             throw new Error("Produto não encontrado");
         }
-        const resultProduct = database_1.products.findIndex((product) => {
-            return product.id === id;
-        });
-        resultProduct < 0
-            ?
-                res.status(404).send("Produto não encontrado")
-            :
-                database_1.products.splice(resultProduct, 1),
-            res.status(200).send("Produto apagado com sucesso");
+        const havePurchases = yield (0, knex_1.db)("purchases").where({ id });
+        if (havePurchases.length > 0) {
+            for (let purchase of havePurchases) {
+                yield (0, knex_1.db)("purchases").where({ id: purchase.id }).del();
+            }
+        }
+        yield (0, knex_1.db)("products").where({ id }).del();
+        res.status(200).send("Produto apagado com sucesso");
     }
     catch (error) {
-        res.status(500).send(error.message);
+        console.log(error);
+        if (res.statusCode === 201) {
+            res.status(500).send(error.message);
+        }
+        if (error instanceof Error) {
+            res.send(error.message);
+        }
+        else {
+            res.send("Erro inesperado");
+        }
     }
-});
-app.put("/users/:id", (req, res) => {
+}));
+app.put("/users/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { id } = req.params;
-        const { email: newEmail, password: newPassword } = req.body;
+        const { name: newName, email: newEmail, password: newPassword } = req.body;
+        if (newName !== undefined) {
+            if (typeof newName !== "string") {
+                throw new Error("NewName deve ser uma string");
+            }
+        }
         if (newEmail !== undefined) {
             if (typeof newEmail !== "string") {
                 throw new Error("NewEmail deve ser uma string");
@@ -279,27 +371,34 @@ app.put("/users/:id", (req, res) => {
                 throw new Error("NewPassword deve ser uma string");
             }
         }
-        const userIdExists = database_1.users.find((user) => user.id === id);
-        if (!userIdExists) {
+        const userIdExists = yield (0, knex_1.db)("users").where({ id }).select("*");
+        if (userIdExists.length === 0) {
             throw new Error("Id não encontrado");
         }
-        const userFind = database_1.users.find((user) => {
-            return user.id === id;
+        yield (0, knex_1.db)("users").where({ id }).update({
+            name: newName || userIdExists[0].name,
+            email: newEmail || userIdExists[0].email,
+            password: newPassword || userIdExists[0].password,
         });
-        if (userFind) {
-            userFind.email = newEmail || userFind.email;
-            userFind.password = newPassword || userFind.password;
-        }
         res.status(200).send("Cadastro atualizado com sucesso");
     }
     catch (error) {
-        res.status(500).send(error.message);
+        console.log(error);
+        if (res.statusCode === 201) {
+            res.status(500).send(error.message);
+        }
+        if (error instanceof Error) {
+            res.send(error.message);
+        }
+        else {
+            res.send("Erro inesperado");
+        }
     }
-});
-app.put("/products/:id", (req, res) => {
+}));
+app.put("/products/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { id } = req.params;
-        const { name: newName, price: newPrice, category: newCategory } = req.body;
+        const { name: newName, price: newPrice, description: newDescription, image_url: newimage_url } = req.body;
         if (newName !== undefined) {
             if (typeof newName !== "string") {
                 throw new Error("NewName deve ser uma string");
@@ -310,27 +409,40 @@ app.put("/products/:id", (req, res) => {
                 throw new Error("NewPrice deve ser um number");
             }
         }
-        if (newCategory !== undefined) {
-            if (typeof newCategory !== "string") {
-                throw new Error("NewCategory deve ser uma string");
+        if (newDescription !== undefined) {
+            if (typeof newDescription !== "string") {
+                throw new Error("NewDescription deve ser uma string");
             }
         }
-        const productIdExists = database_1.products.find((product) => product.id === id);
-        if (!productIdExists) {
+        if (newimage_url !== undefined) {
+            if (typeof newimage_url !== "string") {
+                throw new Error("Newimage_url deve ser uma string");
+            }
+        }
+        const [product] = yield (0, knex_1.db)("products").where({ id }).select("*");
+        if (!product) {
             throw new Error("Produto não encontrado");
         }
-        let productFind = database_1.products.find((product) => {
-            return product.id === id;
-        });
-        if (productFind) {
-            productFind.name = newName || productFind.name;
-            productFind.price = newPrice || productFind.price;
-            productFind.category = newCategory || productFind.category;
-        }
+        const updatedProduct = {
+            name: newName || product.name,
+            price: newPrice || product.price,
+            description: newDescription || product.description,
+            image_url: newimage_url || product.image_url
+        };
+        yield (0, knex_1.db)("products").where({ id }).update(updatedProduct);
         res.status(200).send("Produto atualizado com sucesso");
     }
     catch (error) {
-        res.status(500).send(error.message);
+        console.log(error);
+        if (res.statusCode === 201) {
+            res.status(500).send(error.message);
+        }
+        if (error instanceof Error) {
+            res.send(error.message);
+        }
+        else {
+            res.send("Erro inesperado");
+        }
     }
-});
+}));
 //# sourceMappingURL=index.js.map
