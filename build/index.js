@@ -23,7 +23,21 @@ app.listen(3000, () => {
     console.log('Servidor rodando na porta 3000');
 });
 app.get("/ping", (req, res) => {
-    res.send("Pong!");
+    try {
+        res.send("Pong!");
+    }
+    catch (error) {
+        console.log(error);
+        if (res.statusCode === 201) {
+            res.status(500).send(error.message);
+        }
+        if (error instanceof Error) {
+            res.send(error.message);
+        }
+        else {
+            res.send("Erro inesperado");
+        }
+    }
 });
 app.get("/users", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -431,6 +445,51 @@ app.put("/products/:id", (req, res) => __awaiter(void 0, void 0, void 0, functio
         };
         yield (0, knex_1.db)("products").where({ id }).update(updatedProduct);
         res.status(200).send("Produto atualizado com sucesso");
+    }
+    catch (error) {
+        console.log(error);
+        if (res.statusCode === 201) {
+            res.status(500).send(error.message);
+        }
+        if (error instanceof Error) {
+            res.send(error.message);
+        }
+        else {
+            res.send("Erro inesperado");
+        }
+    }
+}));
+app.get("/purchases/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { id } = req.params;
+        const purchaseInfo = yield (0, knex_1.db)("purchases")
+            .select("purchases.id as purchaseId", "total_price as totalPrice", "purchases.created_at as createdAt", "paid as isPaid", "purchases.buyer as buyerId", "users.email", "users.name as userName", "products.id", "products.name", "products.price", "products.description", "products.image_url", "purchases_products.quantity")
+            .join("users", "purchases.buyer", "users.id")
+            .join("purchases_products", "purchases.id", "purchases_products.purchase_id")
+            .join("products", "purchases_products.product_id", "products.id")
+            .where("purchases.id", id);
+        if (!purchaseInfo.length) {
+            throw new Error("Compra não encontrada");
+        }
+        const productsList = purchaseInfo.map((item) => ({
+            product_id: item.id,
+            name: item.name,
+            price: item.price,
+            description: item.description,
+            image_url: item.image_url,
+            quantity: item.quantity
+        }));
+        const { purchaseId, totalPrice, createdAt, isPaid, buyerId, email, userName } = purchaseInfo[0];
+        res.status(200).send({
+            purchaseId,
+            totalPrice,
+            createdAt,
+            isPaid,
+            buyerId,
+            email,
+            userName,
+            productsList
+        });
     }
     catch (error) {
         console.log(error);
