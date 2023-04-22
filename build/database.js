@@ -4,21 +4,21 @@ exports.getAllPurchasesFromUserId = exports.createPurchase = exports.purchases =
 exports.users = [
     {
         id: "u001",
-        name: "Zé",
-        email: "ze@gmail.com",
+        name: "José",
+        email: "jose@email.com",
         password: "1234jose",
-        created_at: new Date()
+        createdAt: new Date()
     },
     {
         id: "u002",
-        name: "Rato",
-        email: "rato@gmail.com",
-        password: "rato1234",
-        created_at: new Date()
+        name: "Natália",
+        email: "natalia@email.com",
+        password: "natalia1234",
+        createdAt: new Date()
     }
 ];
-const createUser = (id, name, email, password, created_at) => {
-    const newUser = { id, name, email, password, created_at };
+const createUser = (id, name, email, password, createdAt) => {
+    const newUser = { id, name, email, password, createdAt };
     exports.users.push(newUser);
     console.log("Cadastro realizado com sucesso");
 };
@@ -33,18 +33,18 @@ exports.products = [
         name: "Jordan 4 Retro SB Pine Green",
         price: 335,
         description: "Sneakers",
-        image_url: "https://www.exemplo.com/jordan-4-retro-sb-pine-green"
+        imageUrl: "https://www.exemplo.com/jordan-4-retro-sb-pine-green"
     },
     {
         id: "p002",
         name: "Nike Dunk Low Grey Fog",
         price: 137,
         description: "Sneakers",
-        image_url: "https://www.exemplo.com/nike-dunk-low-grey-fog"
+        imageUrl: "https://www.exemplo.com/nike-dunk-low-grey-fog"
     }
 ];
-const createProduct = (id, name, price, description, image_url) => {
-    const newProduct = { id, name, price, description, image_url };
+const createProduct = (id, name, price, description, imageUrl) => {
+    const newProduct = { id, name, price, description, imageUrl };
     exports.products.push(newProduct);
     console.log("Produto criado com sucesso");
 };
@@ -76,20 +76,20 @@ exports.purchases = [
     {
         id: "c001",
         buyer: "u001",
-        total_price: 2000,
-        created_at: new Date(),
+        totalPrice: 2000,
+        createdAt: new Date(),
         paid: 0
     },
     {
         id: "c002",
         buyer: "u002",
-        total_price: 450,
-        created_at: new Date(),
+        totalPrice: 450,
+        createdAt: new Date(),
         paid: 0
     }
 ];
-const createPurchase = (id, buyer, total_price, created_at, paid) => {
-    const newPurchase = { id, buyer, total_price, created_at, paid };
+const createPurchase = (id, buyer, totalPrice, createdAt, paid) => {
+    const newPurchase = { id, buyer, totalPrice, createdAt, paid };
     exports.purchases.push(newPurchase);
     console.log("Compra realizada com sucesso");
 };

@@ -109,7 +109,7 @@ app.get("/products/search", async (req: Request, res: Response) => {
 
 app.post("/users", async (req: Request, res: Response) => {
     try {
-        const { id, name, email, password, created_at } = req.body
+        const { id, name, email, password, createdAt } = req.body
 
         if (id !== undefined) {
             if (typeof id !== "string") {
@@ -152,7 +152,7 @@ app.post("/users", async (req: Request, res: Response) => {
             name,
             email,
             password,
-            created_at
+            createdAt
         }
 
         users.push(newUser)
@@ -175,7 +175,7 @@ app.post("/users", async (req: Request, res: Response) => {
 
 app.post("/products", async (req: Request, res: Response) => {
     try {
-        const { id, name, price, description, image_url } = req.body
+        const { id, name, price, description, imageUrl } = req.body
 
         if (id !== undefined) {
             if (typeof id !== "string") {
@@ -206,7 +206,7 @@ app.post("/products", async (req: Request, res: Response) => {
             name,
             price,
             description,
-            image_url,
+            imageUrl,
         });
 
         const newProduct: TProduct = {
@@ -214,7 +214,7 @@ app.post("/products", async (req: Request, res: Response) => {
             name,
             price,
             description,
-            image_url
+            imageUrl
         }
 
         products.push(newProduct)
@@ -237,7 +237,7 @@ app.post("/products", async (req: Request, res: Response) => {
 
 app.post("/purchases", async (req: Request, res: Response) => {
     try {
-        const { id, buyer, total_price, created_at, paid } = req.body
+        const { id, buyer, totalPrice, createdAt, paid } = req.body
 
         const purchaseExists = await db("purchases").where({ id }).select("*")
 
@@ -257,8 +257,8 @@ app.post("/purchases", async (req: Request, res: Response) => {
             }
         }
 
-        if (total_price !== undefined) {
-            if (typeof total_price !== "number") {
+        if (totalPrice !== undefined) {
+            if (typeof totalPrice !== "number") {
                 throw new Error("TotalPrice deve ser um number")
             }
         }
@@ -266,21 +266,21 @@ app.post("/purchases", async (req: Request, res: Response) => {
         await db("purchases").insert({
             id,
             buyer,
-            total_price,
+            totalPrice,
             paid
         })
 
         const newPurchase: TPurchase = {
             id,
             buyer,
-            total_price,
-            created_at,
+            totalPrice,
+            createdAt,
             paid
         }
 
         purchases.push(newPurchase)
 
-        res.status(201).send("Compra realizada com sucesso")
+        res.status(201).send("Pedido realizado com sucesso")
     } catch (error: any) {
         console.log(error);
 
@@ -486,7 +486,7 @@ app.put("/products/:id", async (req: Request, res: Response) => {
             name: newName,
             price: newPrice, 
             description: newDescription, 
-            image_url: newimage_url 
+            imageUrl: newimageUrl 
         } = req.body
 
         if (newName !== undefined) {
@@ -507,9 +507,9 @@ app.put("/products/:id", async (req: Request, res: Response) => {
             }
         }
 
-        if (newimage_url !== undefined) {
-            if (typeof newimage_url !== "string") {
-                throw new Error("Newimage_url deve ser uma string")
+        if (newimageUrl !== undefined) {
+            if (typeof newimageUrl !== "string") {
+                throw new Error("NewimageUrl deve ser uma string")
             }
         }
 
@@ -523,7 +523,7 @@ app.put("/products/:id", async (req: Request, res: Response) => {
             name: newName || product.name,
             price: newPrice || product.price,
             description: newDescription || product.description,
-            image_url: newimage_url || product.image_url
+            imageUrl: newimageUrl || product.imageUrl
         }
 
         await db("products").where({id}).update(updatedProduct)
@@ -550,22 +550,22 @@ app.get("/purchases/:id", async (req: Request, res: Response) => {
         const purchaseInfo = await db("purchases")
         .select(
             "purchases.id as purchaseId", 
-            "total_price as totalPrice", 
-            "purchases.created_at as createdAt", 
+            "totalPrice as totalPrice", 
+            "purchases.createdAt as createdAt", 
             "paid as isPaid", 
             "purchases.buyer as buyerId", 
-            "users.email",
-            "users.name as userName",
+            "users.email as buyerEmail",
+            "users.name as buyerName",
             "products.id",
             "products.name",
             "products.price",
             "products.description",
-            "products.image_url",
+            "products.imageUrl",
             "purchases_products.quantity"
         )
         .join("users", "purchases.buyer", "users.id")
-        .join("purchases_products", "purchases.id", "purchases_products.purchase_id")
-        .join("products", "purchases_products.product_id", "products.id")
+        .join("purchases_products", "purchases.id", "purchases_products.purchaseId")
+        .join("products", "purchases_products.productId", "products.id")
         .where("purchases.id", id)
 
         if (!purchaseInfo.length) {
@@ -573,35 +573,63 @@ app.get("/purchases/:id", async (req: Request, res: Response) => {
         }
 
         const productsList = purchaseInfo.map((item) => ({
-            product_id: item.id,
+            productId: item.id,
             name: item.name,
             price: item.price,
             description: item.description,
-            image_url: item.image_url,
+            imageUrl: item.imageUrl,
             quantity: item.quantity
         }))
 
         const {
             purchaseId, 
+            buyerId, 
+            buyerName,
+            buyerEmail,
             totalPrice, 
             createdAt, 
-            isPaid, 
-            buyerId, 
-            email, 
-            userName
+            isPaid
         } = purchaseInfo[0]
 
         res.status(200).send({
             purchaseId, 
-            totalPrice, 
-            createdAt, 
-            isPaid, 
             buyerId, 
-            email, 
-            userName,
+            buyerName,
+            buyerEmail,
+            totalPrice, 
+            createdAt,
+            isPaid,
             productsList
         })
 
+    } catch (error: any) {
+        console.log(error);
+
+        if (res.statusCode === 201) {
+            res.status(500).send(error.message);
+        }
+
+        if (error instanceof Error) {
+            res.send(error.message);
+        } else {
+            res.send("Erro inesperado");
+        }
+    }
+})
+
+app.delete("/purchases/:id", async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params
+
+        const purchaseIdExists = await db("purchases").where({id}).select("*")
+
+        if (!purchaseIdExists || purchaseIdExists.length === 0) {
+            throw new Error("Pedido não encontrado")
+        }
+
+        await db("purchases").where({id}).del()
+
+        res.status(200).send("Pedido cancelado com sucesso")
     } catch (error: any) {
         console.log(error);
 

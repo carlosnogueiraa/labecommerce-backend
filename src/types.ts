@@ -3,7 +3,7 @@ export type TUser = {
     name: string,
     email: string,
     password: string
-    created_at: Date
+    createdAt: Date
 }
 
 // export enum PRODUCT_CATEGORY {
@@ -17,14 +17,14 @@ export type TProduct = {
     name: string,
     price: number,
     description: string,
-    image_url: string
+    imageUrl: string
 }
 
 export type TPurchase = {
     id: string,
     buyer: string,
-    total_price: number,
-    created_at: Date,
+    totalPrice: number,
+    createdAt: Date,
     paid: number
 }
 
