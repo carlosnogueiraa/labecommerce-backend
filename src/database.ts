@@ -3,23 +3,23 @@ import { TUser, TProduct, TPurchase } from "./types"
 export const users: TUser[] = [
     {
         id: "u001",
-        name: "Zé",
-        email: "ze@gmail.com",
+        name: "José",
+        email: "jose@email.com",
         password: "1234jose",
-        created_at: new Date()
+        createdAt: new Date()
     },
 
     {
         id: "u002",
-        name: "Rato",
-        email: "rato@gmail.com",
-        password: "rato1234",
-        created_at: new Date()
+        name: "Natália",
+        email: "natalia@email.com",
+        password: "natalia1234",
+        createdAt: new Date()
     }
 ]
 
-export const createUser = (id: string, name: string, email: string, password: string, created_at: Date) => {
-    const newUser: TUser = {id, name, email, password, created_at}
+export const createUser = (id: string, name: string, email: string, password: string, createdAt: Date) => {
+    const newUser: TUser = {id, name, email, password, createdAt}
     users.push(newUser)
     console.log("Cadastro realizado com sucesso")
 }
@@ -34,7 +34,7 @@ export const products: TProduct[] = [
         name: "Jordan 4 Retro SB Pine Green",
         price: 335,
         description: "Sneakers",
-        image_url: "https://www.exemplo.com/jordan-4-retro-sb-pine-green"
+        imageUrl: "https://www.exemplo.com/jordan-4-retro-sb-pine-green"
     },
 
     {
@@ -42,12 +42,12 @@ export const products: TProduct[] = [
         name: "Nike Dunk Low Grey Fog",
         price: 137,
         description: "Sneakers",
-        image_url: "https://www.exemplo.com/nike-dunk-low-grey-fog"
+        imageUrl: "https://www.exemplo.com/nike-dunk-low-grey-fog"
     }
 ]
 
-export const createProduct = (id: string, name: string, price: number, description: string, image_url: string) => {
-    const newProduct: TProduct = {id, name, price, description, image_url}
+export const createProduct = (id: string, name: string, price: number, description: string, imageUrl: string) => {
+    const newProduct: TProduct = {id, name, price, description, imageUrl}
     products.push(newProduct)
     console.log("Produto criado com sucesso")
 }
@@ -84,22 +84,22 @@ export const purchases: TPurchase[] = [
     {
         id: "c001",
         buyer: "u001",
-        total_price: 2000,
-        created_at: new Date(),
+        totalPrice: 2000,
+        createdAt: new Date(),
         paid: 0
     },
 
     {
         id: "c002",
         buyer: "u002",
-        total_price: 450,
-        created_at: new Date(),
+        totalPrice: 450,
+        createdAt: new Date(),
         paid: 0
     }
 ]
 
-export const createPurchase = (id: string, buyer: string, total_price: number, created_at: Date, paid: number) => {
-    const newPurchase: TPurchase = {id, buyer, total_price, created_at, paid}
+export const createPurchase = (id: string, buyer: string, totalPrice: number, createdAt: Date, paid: number) => {
+    const newPurchase: TPurchase = {id, buyer, totalPrice, createdAt, paid}
     purchases.push(newPurchase)
     console.log("Compra realizada com sucesso")
 }

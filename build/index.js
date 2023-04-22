@@ -107,7 +107,7 @@ app.get("/products/search", (req, res) => __awaiter(void 0, void 0, void 0, func
 }));
 app.post("/users", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { id, name, email, password, created_at } = req.body;
+        const { id, name, email, password, createdAt } = req.body;
         if (id !== undefined) {
             if (typeof id !== "string") {
                 throw new Error("Id deve ser uma string");
@@ -142,7 +142,7 @@ app.post("/users", (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             name,
             email,
             password,
-            created_at
+            createdAt
         };
         database_1.users.push(newUser);
         res.status(201).send("Cadastro realizado com sucesso");
@@ -162,7 +162,7 @@ app.post("/users", (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 }));
 app.post("/products", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { id, name, price, description, image_url } = req.body;
+        const { id, name, price, description, imageUrl } = req.body;
         if (id !== undefined) {
             if (typeof id !== "string") {
                 throw new Error("Id deve ser uma string");
@@ -187,14 +187,14 @@ app.post("/products", (req, res) => __awaiter(void 0, void 0, void 0, function* 
             name,
             price,
             description,
-            image_url,
+            imageUrl,
         });
         const newProduct = {
             id,
             name,
             price,
             description,
-            image_url
+            imageUrl
         };
         database_1.products.push(newProduct);
         res.status(201).send("Produto cadastrado com sucesso");
@@ -214,7 +214,7 @@ app.post("/products", (req, res) => __awaiter(void 0, void 0, void 0, function* 
 }));
 app.post("/purchases", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { id, buyer, total_price, created_at, paid } = req.body;
+        const { id, buyer, totalPrice, createdAt, paid } = req.body;
         const purchaseExists = yield (0, knex_1.db)("purchases").where({ id }).select("*");
         if (purchaseExists.length > 0) {
             throw new Error("Já existe uma compra com esse id");
@@ -228,26 +228,26 @@ app.post("/purchases", (req, res) => __awaiter(void 0, void 0, void 0, function*
                 throw new Error("Usuário não encontrado");
             }
         }
-        if (total_price !== undefined) {
-            if (typeof total_price !== "number") {
+        if (totalPrice !== undefined) {
+            if (typeof totalPrice !== "number") {
                 throw new Error("TotalPrice deve ser um number");
             }
         }
         yield (0, knex_1.db)("purchases").insert({
             id,
             buyer,
-            total_price,
+            totalPrice,
             paid
         });
         const newPurchase = {
             id,
             buyer,
-            total_price,
-            created_at,
+            totalPrice,
+            createdAt,
             paid
         };
         database_1.purchases.push(newPurchase);
-        res.status(201).send("Compra realizada com sucesso");
+        res.status(201).send("Pedido realizado com sucesso");
     }
     catch (error) {
         console.log(error);
@@ -412,7 +412,7 @@ app.put("/users/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* 
 app.put("/products/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { id } = req.params;
-        const { name: newName, price: newPrice, description: newDescription, image_url: newimage_url } = req.body;
+        const { name: newName, price: newPrice, description: newDescription, imageUrl: newimageUrl } = req.body;
         if (newName !== undefined) {
             if (typeof newName !== "string") {
                 throw new Error("NewName deve ser uma string");
@@ -428,9 +428,9 @@ app.put("/products/:id", (req, res) => __awaiter(void 0, void 0, void 0, functio
                 throw new Error("NewDescription deve ser uma string");
             }
         }
-        if (newimage_url !== undefined) {
-            if (typeof newimage_url !== "string") {
-                throw new Error("Newimage_url deve ser uma string");
+        if (newimageUrl !== undefined) {
+            if (typeof newimageUrl !== "string") {
+                throw new Error("NewimageUrl deve ser uma string");
             }
         }
         const [product] = yield (0, knex_1.db)("products").where({ id }).select("*");
@@ -441,7 +441,7 @@ app.put("/products/:id", (req, res) => __awaiter(void 0, void 0, void 0, functio
             name: newName || product.name,
             price: newPrice || product.price,
             description: newDescription || product.description,
-            image_url: newimage_url || product.image_url
+            imageUrl: newimageUrl || product.imageUrl
         };
         yield (0, knex_1.db)("products").where({ id }).update(updatedProduct);
         res.status(200).send("Produto atualizado com sucesso");
@@ -463,33 +463,56 @@ app.get("/purchases/:id", (req, res) => __awaiter(void 0, void 0, void 0, functi
     try {
         const { id } = req.params;
         const purchaseInfo = yield (0, knex_1.db)("purchases")
-            .select("purchases.id as purchaseId", "total_price as totalPrice", "purchases.created_at as createdAt", "paid as isPaid", "purchases.buyer as buyerId", "users.email", "users.name as userName", "products.id", "products.name", "products.price", "products.description", "products.image_url", "purchases_products.quantity")
+            .select("purchases.id as purchaseId", "totalPrice as totalPrice", "purchases.createdAt as createdAt", "paid as isPaid", "purchases.buyer as buyerId", "users.email as buyerEmail", "users.name as buyerName", "products.id", "products.name", "products.price", "products.description", "products.imageUrl", "purchases_products.quantity")
             .join("users", "purchases.buyer", "users.id")
-            .join("purchases_products", "purchases.id", "purchases_products.purchase_id")
-            .join("products", "purchases_products.product_id", "products.id")
+            .join("purchases_products", "purchases.id", "purchases_products.purchaseId")
+            .join("products", "purchases_products.productId", "products.id")
             .where("purchases.id", id);
         if (!purchaseInfo.length) {
             throw new Error("Compra não encontrada");
         }
         const productsList = purchaseInfo.map((item) => ({
-            product_id: item.id,
+            productId: item.id,
             name: item.name,
             price: item.price,
             description: item.description,
-            image_url: item.image_url,
+            imageUrl: item.imageUrl,
             quantity: item.quantity
         }));
-        const { purchaseId, totalPrice, createdAt, isPaid, buyerId, email, userName } = purchaseInfo[0];
+        const { purchaseId, buyerId, buyerName, buyerEmail, totalPrice, createdAt, isPaid } = purchaseInfo[0];
         res.status(200).send({
             purchaseId,
+            buyerId,
+            buyerName,
+            buyerEmail,
             totalPrice,
             createdAt,
             isPaid,
-            buyerId,
-            email,
-            userName,
             productsList
         });
+    }
+    catch (error) {
+        console.log(error);
+        if (res.statusCode === 201) {
+            res.status(500).send(error.message);
+        }
+        if (error instanceof Error) {
+            res.send(error.message);
+        }
+        else {
+            res.send("Erro inesperado");
+        }
+    }
+}));
+app.delete("/purchases/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { id } = req.params;
+        const purchaseIdExists = yield (0, knex_1.db)("purchases").where({ id }).select("*");
+        if (!purchaseIdExists || purchaseIdExists.length === 0) {
+            throw new Error("Pedido não encontrado");
+        }
+        yield (0, knex_1.db)("purchases").where({ id }).del();
+        res.status(200).send("Pedido cancelado com sucesso");
     }
     catch (error) {
         console.log(error);
