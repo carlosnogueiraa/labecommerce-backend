@@ -24,5 +24,5 @@
 
 Para mais detalhes sobre cada endpoint consulte a
 <a href="https://documenter.getpostman.com/view/24823099/2s93RWPr3S" target="_blank">
-  documentação da API
+  documentação da API.
 </a>
