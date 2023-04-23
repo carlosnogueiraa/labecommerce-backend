@@ -372,7 +372,7 @@ app.delete("/users/:id", async (req: Request, res: Response) => {
 
         await db("users").where({id}).del()
 
-        res.status(200).send("Usuário apagado com sucesso")
+        res.status(200).send("Usuário deletado com sucesso")
     } catch (error: any) {
         console.log(error);
 
@@ -408,7 +408,7 @@ app.delete("/products/:id", async (req: Request, res: Response) => {
 
         await db("products").where({id}).del()
 
-        res.status(200).send("Produto apagado com sucesso")
+        res.status(200).send("Produto deletado com sucesso")
     } catch (error: any) {
         console.log(error);
 

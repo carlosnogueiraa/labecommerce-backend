@@ -322,7 +322,7 @@ app.delete("/users/:id", (req, res) => __awaiter(void 0, void 0, void 0, functio
             yield (0, knex_1.db)("purchases").where("buyer", id).del();
         }
         yield (0, knex_1.db)("users").where({ id }).del();
-        res.status(200).send("Usuário apagado com sucesso");
+        res.status(200).send("Usuário deletado com sucesso");
     }
     catch (error) {
         console.log(error);
@@ -351,7 +351,7 @@ app.delete("/products/:id", (req, res) => __awaiter(void 0, void 0, void 0, func
             }
         }
         yield (0, knex_1.db)("products").where({ id }).del();
-        res.status(200).send("Produto apagado com sucesso");
+        res.status(200).send("Produto deletado com sucesso");
     }
     catch (error) {
         console.log(error);
