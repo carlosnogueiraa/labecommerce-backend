@@ -5,20 +5,20 @@
 
 ## Endpoints Disponíveis
 
-- `[GET] getAllUsers`: Endpoint que busca por todos os usuários cadastrados.
-- `[GET] getAllProducts`: Endpoint que busca por todos os produtos cadastrados.
-- `[GET] searchProductByName`: Endpoint que busca um produto pelo nome.
-- `[GET] getProductById`: Endpoint que busca um produto pelo ID.
-- `[GET] getPurchasesByUserId`: Endpoint que busca os pedidos feitos pelo ID do usuário.
-- `[GET] getPurchaseById`: Endpoint que busca um pedido pelo ID.
-- `[DELETE] deleteUserById`: Endpoint que deleta um usuário pelo ID.
-- `[DELETE] deleteProductById`: Endpoint que deleta um produto pelo ID.
-- `[DELETE] deletePurchaseById`: Endpoint que deleta um pedido pelo ID.
-- `[PUT] editProductById`: Endpoint que edita um produto pelo ID.
-- `[PUT] editUserById`: Endpoint que edita um usuário pelo ID.
-- `[POST] createPurchase`: Endpoint que cria um pedido.
-- `[POST] createProduct`: Endpoint que cria um produto.
-- `[POST] createUser`: Endpoint que cria um usuário.
+- `[GET] getAllUsers`: Busca por todos os usuários cadastrados.
+- `[GET] getAllProducts`: Busca por todos os produtos cadastrados.
+- `[GET] searchProductByName`: Busca um produto pelo nome.
+- `[GET] getProductById`: Busca um produto pelo ID.
+- `[GET] getPurchasesByUserId`: Busca os pedidos feitos pelo ID do usuário.
+- `[GET] getPurchaseById`: Busca um pedido pelo ID.
+- `[DELETE] deleteUserById`: Deleta um usuário pelo ID.
+- `[DELETE] deleteProductById`: Deleta um produto pelo ID.
+- `[DELETE] deletePurchaseById`: Deleta um pedido pelo ID.
+- `[PUT] editProductById`: Edita um produto pelo ID.
+- `[PUT] editUserById`: Edita um usuário pelo ID.
+- `[POST] createPurchase`: Cria um pedido.
+- `[POST] createProduct`: Cria um produto.
+- `[POST] createUser`: Cria um usuário.
 
 <br>
 
